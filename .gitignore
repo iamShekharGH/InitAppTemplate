@@ -1,0 +1,19 @@
+# IDE & System files
+.idea/
+*.iml
+.gradle/
+local.properties
+.DS_Store
+
+# Root Build files
+/build/
+/captures/
+.externalNativeBuild/
+.cxx/
+
+# Profiling and Logs
+*.hprof
+
+# Keystores (Global safety)
+*.jks
+*.keystore

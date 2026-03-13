@@ -22,6 +22,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "InitAppTemplate"
+rootProject.name = "reminder"
 include(":app")
  

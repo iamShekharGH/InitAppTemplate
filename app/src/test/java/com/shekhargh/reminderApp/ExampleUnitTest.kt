@@ -1,4 +1,4 @@
-package com.shekhargh.initapptemplate
+package com.shekhargh.reminderApp
 
 import org.junit.Test
 

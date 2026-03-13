@@ -1,4 +1,4 @@
-package com.shekhargh.initapptemplate.ui.theme
+package com.shekhargh.reminderApp.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -33,7 +33,7 @@ private val LightColorScheme = lightColorScheme(
 )
 
 @Composable
-fun InitAppTemplateTheme(
+fun ReminderTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,

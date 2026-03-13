@@ -1,4 +1,4 @@
-package com.shekhargh.initapptemplate.ui.theme
+package com.shekhargh.reminderApp.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

@@ -9,11 +9,11 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.InitAppTemplate">
+        android:theme="@style/Theme.Reminder">
         <activity
-            android:name="com.shekhargh.initapptemplate.MainActivity"
+            android:name="com.shekhargh.reminderApp.MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.InitAppTemplate">
+            android:theme="@style/Theme.Reminder">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

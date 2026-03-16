@@ -67,6 +67,11 @@ dependencies {
     ksp(libs.androidx.hilt.compiler)
     ksp(libs.hilt.compiler)
 
+    // Room
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
+
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -81,6 +86,7 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.turbine)
     testImplementation(libs.hilt.android.testing)
+    testImplementation(libs.androidx.room.testing)
     kspTest(libs.hilt.compiler)
     testImplementation(libs.mockk)
     testImplementation(libs.robolectric)
@@ -93,6 +99,7 @@ dependencies {
     androidTestImplementation(libs.androidx.work.testing)
     androidTestImplementation(libs.truth)
     androidTestImplementation(libs.hilt.android.testing)
+    androidTestImplementation(libs.androidx.room.testing)
     kspAndroidTest(libs.hilt.compiler)
     androidTestImplementation(libs.mockk.android)
 

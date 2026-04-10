@@ -14,7 +14,7 @@ class ReminderAppTypeConverters {
 
     @TypeConverter
     fun stringToPriority(priorityString: String): Priority {
-        return Priority.valueOf(priorityString) ?: Priority.LOW
+        return Priority.valueOf(priorityString)
     }
 
     @TypeConverter

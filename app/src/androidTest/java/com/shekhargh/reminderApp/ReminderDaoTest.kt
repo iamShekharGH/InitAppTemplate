@@ -83,8 +83,8 @@ class ReminderDaoTest {
     fun updateItem_validReminder_returnsRowsAffected() = runTest {
 
 
-        var initialReminder1 = getReminderItemFromIndex(0)
-        var initialReminder2 = getReminderItemFromIndex(1)
+        val initialReminder1 = getReminderItemFromIndex(0)
+        val initialReminder2 = getReminderItemFromIndex(1)
 
         val reminderID1 = dao.upsertReminder(initialReminder1)
         val reminderID2 = dao.upsertReminder(initialReminder2)
@@ -119,7 +119,7 @@ class ReminderDaoTest {
         dao.updateCompletionStatus(isComplete = true, id = insertItem1.toInt())
 
         var updatedItem1 = dao.getItemFromId(insertItem1.toInt())
-        var updatedItem2 = dao.getItemFromId(insertItem2.toInt())
+        val updatedItem2 = dao.getItemFromId(insertItem2.toInt())
 
         assertThat(updatedItem1?.completionStatus).isTrue()
         assertThat(updatedItem2?.completionStatus).isFalse()

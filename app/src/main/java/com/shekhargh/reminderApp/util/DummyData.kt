@@ -1,7 +1,7 @@
 package com.shekhargh.reminderApp.util
 
-import com.shekhargh.reminderApp.db.Priority
-import com.shekhargh.reminderApp.db.Reminder
+import com.shekhargh.reminderApp.data.db.Priority
+import com.shekhargh.reminderApp.data.db.Reminder
 import java.time.LocalDateTime
 
 object SampleData {

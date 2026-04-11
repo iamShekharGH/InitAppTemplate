@@ -1,4 +1,4 @@
-package com.shekhargh.reminderApp.db
+package com.shekhargh.reminderApp.data.db
 
 import androidx.room.TypeConverter
 import java.time.Instant

@@ -4,9 +4,9 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.common.truth.Truth.assertThat
-import com.shekhargh.reminderApp.db.Reminder
-import com.shekhargh.reminderApp.db.ReminderDatabase
-import com.shekhargh.reminderApp.db.RemindersDao
+import com.shekhargh.reminderApp.data.db.Reminder
+import com.shekhargh.reminderApp.data.db.ReminderDatabase
+import com.shekhargh.reminderApp.data.db.RemindersDao
 import com.shekhargh.reminderApp.util.SampleData
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -35,16 +35,6 @@ class ReminderDaoTest {
     fun teardown() {
         database.close()
     }
-
-
-    /*
-        So i need to write test for
-        1.  upser
-        2.  delete
-        3.  getItemFromId
-        4.  updateCompletionStatus
-        5.  getAllReminders
-     */
 
     @Test
     fun insertReminder_validReminder_returnsReminderIdAndStoresData() = runTest {

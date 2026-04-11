@@ -1,4 +1,4 @@
-package com.shekhargh.reminderApp.db
+package com.shekhargh.reminderApp.data.db
 
 import androidx.room.Dao
 import androidx.room.Database

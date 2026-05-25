@@ -7,6 +7,10 @@ import com.shekhargh.reminderApp.data.db.RemindersDao
 import com.shekhargh.reminderApp.data.repo.RemindersRepositoryImpl
 import com.shekhargh.reminderApp.databaseTable
 import com.shekhargh.reminderApp.domain.RemindersRepository
+import com.shekhargh.reminderApp.workManagerFiles.notification.NotificationHelper
+import com.shekhargh.reminderApp.workManagerFiles.notification.NotificationHelperImpl
+import com.shekhargh.reminderApp.workManagerFiles.scheduler.ReminderScheduler
+import com.shekhargh.reminderApp.workManagerFiles.scheduler.ReminderSchedulerImpl
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -22,6 +26,14 @@ abstract class ReminderModule {
     @Binds
     @Singleton
     abstract fun bindsRepoToImpl(remindersRepositoryImpl: RemindersRepositoryImpl): RemindersRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindsNotificationHelper(notificationHelperImpl: NotificationHelperImpl): NotificationHelper
+
+    @Binds
+    @Singleton
+    abstract fun bindsReminderScheduler(reminderSchedulerImpl: ReminderSchedulerImpl): ReminderScheduler
 
 
     companion object {

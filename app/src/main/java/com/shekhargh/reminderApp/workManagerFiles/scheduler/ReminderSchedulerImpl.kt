@@ -19,7 +19,6 @@ class ReminderSchedulerImpl @Inject constructor(
 ) : ReminderScheduler {
 
     override fun scheduleReminder(reminder: Reminder) {
-
         val delay = Duration.between(LocalDateTime.now(), reminder.dueDate).toMillis()
         if (delay <= 0) return
 

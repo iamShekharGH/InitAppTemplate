@@ -32,10 +32,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.shekhargh.reminderApp.data.db.Priority
 import com.shekhargh.reminderApp.data.db.Reminder
 import com.shekhargh.reminderApp.ui.theme.ReminderTheme
 import com.shekhargh.reminderApp.util.SampleData
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,6 +52,15 @@ fun HomeScreenComposable() {
     HomeScreenContent(
         uiState = uiState,
         onReminderClick = { selectedReminder = it },
+        onAddClick = {
+            selectedReminder = Reminder(
+                id = 0,
+                title = "",
+                description = "",
+                priority = Priority.LOW,
+                dueDate = LocalDateTime.now().plusHours(1)
+            )
+        },
         onCompletionChange = { reminder, isCompleted ->
             viewModel.updateCompletionStatus(reminder, isCompleted)
         }
@@ -82,6 +93,7 @@ fun HomeScreenComposable() {
 fun HomeScreenContent(
     uiState: HomeScreenUiState,
     onReminderClick: (Reminder) -> Unit = {},
+    onAddClick: () -> Unit = {},
     onCompletionChange: (Reminder, Boolean) -> Unit = { _, _ -> }
 ) {
     Scaffold(
@@ -97,7 +109,7 @@ fun HomeScreenContent(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { /* TODO: Navigate to Add Reminder */ },
+                onClick = onAddClick,
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer
             ) {

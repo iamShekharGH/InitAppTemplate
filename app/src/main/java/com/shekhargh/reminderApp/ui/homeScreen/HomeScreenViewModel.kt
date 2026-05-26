@@ -7,6 +7,7 @@ import com.shekhargh.reminderApp.data.usecase.GetAllTasksUseCase
 import com.shekhargh.reminderApp.data.usecase.InsertUpdateReminderUseCase
 import com.shekhargh.reminderApp.data.usecase.Result
 import com.shekhargh.reminderApp.util.SampleData
+import com.shekhargh.reminderApp.workManagerFiles.scheduler.ReminderScheduler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +18,8 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
     private val getAllTasksUseCase: GetAllTasksUseCase,
-    private val insertUpdateReminderUseCase: InsertUpdateReminderUseCase
+    private val insertUpdateReminderUseCase: InsertUpdateReminderUseCase,
+    private val reminderScheduler: ReminderScheduler
 ) : ViewModel() {
 
     private val _homeScreenState = MutableStateFlow<HomeScreenUiState>(HomeScreenUiState.Loading)
@@ -60,13 +62,28 @@ class HomeScreenViewModel @Inject constructor(
 
     fun saveReminder(reminder: Reminder) {
         viewModelScope.launch {
-            insertUpdateReminderUseCase(reminder)
+            val result = insertUpdateReminderUseCase(reminder)
+            if (result is Result.Success) {
+                // For new reminders (id=0), use the generated ID from the database.
+                // For updates, use the existing reminder.id, as Room's @Upsert may return -1 for updates.
+                val finalId = if (reminder.id == 0) result.data else reminder.id
+                reminderScheduler.scheduleReminder(reminder.copy(id = finalId))
+            }
         }
     }
 
     fun updateCompletionStatus(reminder: Reminder, isCompleted: Boolean) {
         viewModelScope.launch {
-            insertUpdateReminderUseCase(reminder.copy(completionStatus = isCompleted))
+            val updatedReminder = reminder.copy(completionStatus = isCompleted)
+            val result = insertUpdateReminderUseCase(updatedReminder)
+            if (result is Result.Success) {
+                if (isCompleted) {
+                    reminderScheduler.cancelReminder(reminder.id)
+                } else {
+                    // Use the existing ID for scheduling updates
+                    reminderScheduler.scheduleReminder(updatedReminder)
+                }
+            }
         }
     }
 }

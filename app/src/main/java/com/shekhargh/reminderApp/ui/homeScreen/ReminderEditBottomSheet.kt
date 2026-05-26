@@ -58,7 +58,9 @@ fun ReminderEditBottomSheet(
     var title by remember { mutableStateOf(reminder.title) }
     var description by remember { mutableStateOf(reminder.description) }
     var priority by remember { mutableStateOf(reminder.priority) }
-    var dueDate by remember { mutableStateOf(reminder.dueDate) }
+    
+    var selectedDate by remember { mutableStateOf(reminder.dueDate.toLocalDate()) }
+    var selectedTime by remember { mutableStateOf(reminder.dueDate.toLocalTime()) }
 
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
@@ -71,7 +73,7 @@ fun ReminderEditBottomSheet(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
-            text = "Edit Reminder",
+            text = if (reminder.id == 0) "Add Reminder" else "Edit Reminder",
             style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)
         )
 
@@ -103,7 +105,7 @@ fun ReminderEditBottomSheet(
             ) {
                 Icon(Icons.Default.CalendarMonth, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(dueDate.format(DateTimeFormatter.ofPattern("MMM dd, yyyy")))
+                Text(selectedDate.format(DateTimeFormatter.ofPattern("MMM dd, yyyy")))
             }
             Button(
                 onClick = { showTimePicker = true },
@@ -113,8 +115,27 @@ fun ReminderEditBottomSheet(
             ) {
                 Icon(Icons.Default.Schedule, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(dueDate.format(DateTimeFormatter.ofPattern("HH:mm")))
+                Text(selectedTime.format(DateTimeFormatter.ofPattern("HH:mm")))
             }
+        }
+
+        TextButton(
+            onClick = {
+                val oneMinuteFromNow = LocalDateTime.now().plusMinutes(1)
+                onSave(
+                    reminder.copy(
+                        title = title,
+                        description = description,
+                        priority = priority,
+                        dueDate = oneMinuteFromNow
+                    )
+                )
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Icon(Icons.Default.Schedule, contentDescription = null)
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("Set for 1 minute from now (Test)")
         }
 
         Text(text = "Priority", style = MaterialTheme.typography.titleMedium)
@@ -140,25 +161,26 @@ fun ReminderEditBottomSheet(
 
         Button(
             onClick = {
+                val finalDueDate = LocalDateTime.of(selectedDate, selectedTime)
                 onSave(
                     reminder.copy(
                         title = title,
                         description = description,
                         priority = priority,
-                        dueDate = dueDate
+                        dueDate = finalDueDate
                     )
                 )
             },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(8.dp)
         ) {
-            Text("Save Changes")
+            Text(if (reminder.id == 0) "Add Reminder" else "Save Changes")
         }
     }
 
     if (showDatePicker) {
         val datePickerState = rememberDatePickerState(
-            initialSelectedDateMillis = dueDate.atZone(ZoneId.systemDefault()).toInstant()
+            initialSelectedDateMillis = selectedDate.atStartOfDay(ZoneId.systemDefault()).toInstant()
                 .toEpochMilli()
         )
         DatePickerDialog(
@@ -166,10 +188,9 @@ fun ReminderEditBottomSheet(
             confirmButton = {
                 TextButton(onClick = {
                     datePickerState.selectedDateMillis?.let { millis ->
-                        val selectedDate =
-                            Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault())
-                                .toLocalDate()
-                        dueDate = LocalDateTime.of(selectedDate, dueDate.toLocalTime())
+                        selectedDate = Instant.ofEpochMilli(millis)
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDate()
                     }
                     showDatePicker = false
                 }) { Text("OK") }
@@ -184,17 +205,14 @@ fun ReminderEditBottomSheet(
 
     if (showTimePicker) {
         val timePickerState = rememberTimePickerState(
-            initialHour = dueDate.hour,
-            initialMinute = dueDate.minute
+            initialHour = selectedTime.hour,
+            initialMinute = selectedTime.minute
         )
         AlertDialog(
             onDismissRequest = { showTimePicker = false },
             confirmButton = {
                 TextButton(onClick = {
-                    dueDate = LocalDateTime.of(
-                        dueDate.toLocalDate(),
-                        LocalTime.of(timePickerState.hour, timePickerState.minute)
-                    )
+                    selectedTime = LocalTime.of(timePickerState.hour, timePickerState.minute)
                     showTimePicker = false
                 }) { Text("OK") }
             },

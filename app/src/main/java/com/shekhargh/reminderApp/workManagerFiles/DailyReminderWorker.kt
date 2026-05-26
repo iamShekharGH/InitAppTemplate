@@ -18,16 +18,21 @@ class DailyReminderWorker @AssistedInject constructor(
 ) : CoroutineWorker(context, params) {
 
     override suspend fun doWork(): Result {
+        // Robust ID extraction: WorkManager may store numbers as Longs depending on source.
+        val reminderId = when (val value = inputData.keyValueMap[reminderKeyText]) {
+            is Int -> value
+            is Long -> value.toInt()
+            else -> inputData.getInt(reminderKeyText, -1)
+        }
 
-        val reminderId = inputData.getInt(reminderKeyText, -1)
         if (reminderId == -1) return Result.failure()
 
-        when (val reminder = getItemFromIdUseCase(reminderId)) {
-            com.shekhargh.reminderApp.data.usecase.Result.Empty -> return Result.failure()
-            is com.shekhargh.reminderApp.data.usecase.Result.Error -> return Result.failure()
+        return when (val reminder = getItemFromIdUseCase(reminderId)) {
+            com.shekhargh.reminderApp.data.usecase.Result.Empty -> Result.failure()
+            is com.shekhargh.reminderApp.data.usecase.Result.Error -> Result.failure()
             is com.shekhargh.reminderApp.data.usecase.Result.Success -> {
                 notificationHelper.showNotification(reminder.data)
-                return Result.success()
+                Result.success()
             }
         }
     }

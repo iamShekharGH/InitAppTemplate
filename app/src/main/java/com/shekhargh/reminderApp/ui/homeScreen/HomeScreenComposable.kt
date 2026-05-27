@@ -1,5 +1,9 @@
 package com.shekhargh.reminderApp.ui.homeScreen
 
+import android.Manifest
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -20,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,6 +36,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.shekhargh.reminderApp.data.db.Priority
 import com.shekhargh.reminderApp.data.db.Reminder
@@ -44,7 +52,23 @@ import java.time.LocalDateTime
 fun HomeScreenComposable() {
     val viewModel: HomeScreenViewModel = hiltViewModel()
     val uiState by viewModel.homeScreenState.collectAsStateWithLifecycle()
+    val showPermissionRequest by viewModel.showNotificationPermissionRequest.collectAsStateWithLifecycle()
 
+    val lifecycleOwner = LocalLifecycleOwner.current
+    LaunchedEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.checkNotificationPermission()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+    }
+
+    NotificationPermissionEffect(
+        shouldRequest = showPermissionRequest,
+        onHandled = { viewModel.onPermissionRequestHandled() }
+    )
+    
     var selectedReminder by remember { mutableStateOf<Reminder?>(null) }
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
@@ -187,5 +211,29 @@ fun EditBottomSheetPreview() {
             reminder = SampleData.reminders[0],
             onSave = {}
         )
+    }
+}
+
+@Composable
+fun NotificationPermissionEffect(
+    shouldRequest: Boolean,
+    onHandled: () -> Unit
+) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        val launcher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestPermission()
+        ) { _ ->
+            onHandled()
+        }
+
+        LaunchedEffect(shouldRequest) {
+            if (shouldRequest) {
+                launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+    } else {
+        if (shouldRequest) {
+            onHandled()
+        }
     }
 }

@@ -33,6 +33,10 @@ class NotificationHelperImpl @Inject constructor(
     }
 
 
+    override fun areNotificationsEnabled(): Boolean {
+        return notificationManager.areNotificationsEnabled()
+    }
+
     override fun showNotification(reminder: Reminder) {
 
         val deeplink = Intent(Intent.ACTION_VIEW, "reminder://item/${reminder.id}".toUri())

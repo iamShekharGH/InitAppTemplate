@@ -3,6 +3,7 @@ package com.shekhargh.reminderApp.ui.homeScreen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.shekhargh.reminderApp.data.db.Reminder
+import com.shekhargh.reminderApp.data.usecase.CheckNotificationPermissionUseCase
 import com.shekhargh.reminderApp.data.usecase.GetAllTasksUseCase
 import com.shekhargh.reminderApp.data.usecase.InsertUpdateReminderUseCase
 import com.shekhargh.reminderApp.data.usecase.Result
@@ -19,14 +20,29 @@ import javax.inject.Inject
 class HomeScreenViewModel @Inject constructor(
     private val getAllTasksUseCase: GetAllTasksUseCase,
     private val insertUpdateReminderUseCase: InsertUpdateReminderUseCase,
+    private val checkNotificationPermissionUseCase: CheckNotificationPermissionUseCase,
     private val reminderScheduler: ReminderScheduler
 ) : ViewModel() {
 
     private val _homeScreenState = MutableStateFlow<HomeScreenUiState>(HomeScreenUiState.Loading)
     val homeScreenState = _homeScreenState.asStateFlow()
 
+    private val _showNotificationPermissionRequest = MutableStateFlow(false)
+    val showNotificationPermissionRequest = _showNotificationPermissionRequest.asStateFlow()
+
     init {
         getAllReminders()
+        checkNotificationPermission()
+    }
+
+    fun checkNotificationPermission() {
+        if (!checkNotificationPermissionUseCase()) {
+            _showNotificationPermissionRequest.value = true
+        }
+    }
+
+    fun onPermissionRequestHandled() {
+        _showNotificationPermissionRequest.value = false
     }
 
     fun getAllReminders() {
